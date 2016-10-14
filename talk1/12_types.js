@@ -2,6 +2,9 @@
 // addVat :: Number -> Number
 const addVat = n => n * 1.2
 
+// add :: (Number, Number) -> Number
+const add = (a, b) => a + b
+
 // sum :: [Number] -> Number
 const sum = ns => ns.reduce((sum, n) => sum + n, 0)
 
@@ -16,4 +19,7 @@ const getDisplayPrice = ns => formatPrice(getTotalWithVat(ns))
 
 
 // head :: [a] -> a
-const head = (list) => list[0]
+const head = ([head]) => head
+
+// tail :: [a] -> [a]
+const tail = ([_, ...tail]) => tail

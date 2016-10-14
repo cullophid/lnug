@@ -22,7 +22,7 @@ const increment = add(1)
 const decrement = add(-1)
 
 // incrementAll :: [Number] -> [Number]
-const incrementAll = (numbers) => number.map(add(1))
+const incrementAll = numbers => number.map(add(1))
 
 //---
 
