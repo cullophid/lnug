@@ -1,25 +1,35 @@
 
-// addVat :: Number -> Number
-const addVat = n => n * 1.2
+// isNil :: a -> Boolean
+const isNil = x => x === null && x === undefined
 
-// add :: (Number, Number) -> Number
-const add = (a, b) => a + b
+// reduce
 
-// sum :: [Number] -> Number
-const sum = ns => ns.reduce((sum, n) => sum + n, 0)
+// reduce :: ((b, a) -> b, b, [a]) -> b
+const reduce = (f, acc, [x, ...xs]) => isNil(x) ?  acc : reduce(f, f(acc, x), xs)
 
-// totalWithVat :: [Number] -> Number
-const getTotalWithVat = (ns) => addVat(sum(ns))
+// using reduce
 
-// formatPrice :: Number -> String
-const formatPrice = n => `£${n}GBP`
+// map :: (a -> b, [a]) -> [b]
+const map = (fn, list) => reduce((a, e) => [...a, fn(e)], [], list)
 
-// getDisplayPrice :: [Number] -> String
-const getDisplayPrice = ns => formatPrice(getTotalWithVat(ns))
+// filter :: (a -> Bolean, [a]) -> [a]
+const filter = (fn, list) => reduce((a, e) => fn(e) ? [...a, e] : a, [], list)
 
+// using map
 
-// head :: [a] -> a
-const head = ([head]) => head
+// pick :: ([String], {String: a}) -> {String: a}
+const pick = (keys, x) => map(k => x[k], keys)
 
-// tail :: [a] -> [a]
-const tail = ([_, ...tail]) => tail
+// pluck :: (String, [{String: a}]) -> [a]
+const pluck = (key, list) => map(x => x[key] , list)
+
+// find
+
+// find :: (a -> Boolan, [a]) -> a | null
+const find = (f, [x, ...xs]) => isNil(x) ? null : (f(x) ? x : find(f, xs))
+
+// any :: (a -> Boolean, [a]) -> Boolean
+const any = (f, xs) => !isNil(find(f, xs))
+
+// contains :: (a, [a]) -> Boolean
+const contains = (v, xs) => any(x => x === v, xs)
