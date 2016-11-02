@@ -1,11 +1,27 @@
 const {Maybe, Just, Nothing, toMaybe, add} = require('sanctuary');
-const {curry, map, prop, compose, chain, find, reduce} = require('ramda');
-
-// safeFind :: (a -> Boolean) -> [a] -> Maybe a
-const safeFind = curry(compose(toMaybe, find));
+const {curry, map, prop, compose, chain, find, reduce, toUpper} = require('ramda');
 
 // safeProp :: String -> {String: a} -> Maybe a
 const safeProp = curry(compose(toMaybe, prop));
+
+let obj = {a: 'abc'};
+
+map(toUpper, toMaybe(prop('a', obj)));   // => Just(‘ABC’)
+map(toUpper, toMaybe(prop('b', obj)));   // => Nothing()
+//toUpper(prop('b', obj));  // => TypeError
+
+obj = {a: {b: {c: 9}}};
+
+// no chain
+compose(map(map(safeProp('c'))), map(safeProp('b')), safeProp('a'))(obj);
+// => Just(Just(Just(9))) wtf?
+
+//chain
+compose(chain(safeProp('c')), chain(safeProp('b')), safeProp('a'))(obj);
+// => Just(9)
+
+// safeFind :: (a -> Boolean) -> [a] -> Maybe a
+const safeFind = curry(compose(toMaybe, find));
 
 //safePath :: [String] -> {String: a} -> Maybe a
 const safePath = curry((path, obj) => reduce((maybeObj, prop) => {
@@ -20,7 +36,7 @@ const xs = [
 ];
 
 // rather than complecting null safety with business logic
-let obj = find(x => x === 1, xs);
+obj = find(x => x === 1, xs);
 let num = 0;
 if(obj && obj.a && obj.a.b && obj.a.b.c) { // <= does not compose!
     num = obj.a.b.c + 1
