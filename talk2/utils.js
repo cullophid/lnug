@@ -87,7 +87,7 @@ const parseDate = dateStr => {
 
 const json = '{"date": "2014-4-9"}';
 compose(chain(parseDate), map(prop('date')), encaseEither(JSON.parse))(json);
-// => Right(Date('Wed Apr 09 2014 00:00:00 GMT+0100 (BST)'))
+// => Right(Date('Wed Apr 09 2014 00:00:00 GMT+0100 (GMT)'))
 
 // readFile :: String -> Future Error String
 const readFile = file => Future((reject, resolve) => {
@@ -98,21 +98,23 @@ const readFile = file => Future((reject, resolve) => {
 });
 
 // describe computation
-const authorF = compose(map(prop('author')), map(JSON.parse), readFile)('../package.json');
+const nameF = compose(map(path(['author', 'name'])), map(JSON.parse), readFile)('../package.json');
 
 // execute computation
-authorF.fork(console.error, console.log);
+nameF.fork(console.error, console.log);
 // => Stefano Vozza
 
 // httpGet :: String -> Future Error Object
 const httpGet = url => Future((reject, resolve) => {
-    request({url, json: true}, (err, res, body) => {
+    request(url, (err, res, body) => {
         if(err) return reject(err);
         return resolve(body);
     });
 });
 
+const siteF = compose(chain(httpGet), map(path(['author', 'url'])), map(JSON.parse), readFile)('../package.json');
 
+siteF.fork(console.error, console.log);
 
 
 
